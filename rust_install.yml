@@ -1,0 +1,41 @@
+---
+- name: Install Rust
+  hosts: localhost
+  connection: local
+  become: no
+  tasks:
+#    - name: Install required packages
+#      apt:
+#        name: 
+#          - curl
+#          - build-essential
+#        state: present
+#        update_cache: yes
+
+    - name: Download Rust installer
+      get_url:
+        url: https://sh.rustup.rs
+        dest: /tmp/rustup.sh
+        mode: '0755'
+
+    - name: Install Rust (non-interactive)
+      shell: /tmp/rustup.sh -y
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+      become: no
+
+    - name: Add Cargo to PATH in shell configs
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/{{ item }}"
+        line: 'export PATH="$HOME/.cargo/bin:$PATH"'
+        state: present
+        create: yes
+      with_items:
+        - .bashrc
+        - .zshrc
+      become: no
+
+    - name: Clean up installer
+      file:
+        path: /tmp/rustup.sh
+        state: absent
