@@ -4,14 +4,6 @@
   connection: local
   become: no
   tasks:
-#    - name: Install required packages
-#      apt:
-#        name: 
-#          - curl
-#          - build-essential
-#        state: present
-#        update_cache: yes
-
     - name: Download Rust installer
       get_url:
         url: https://sh.rustup.rs
